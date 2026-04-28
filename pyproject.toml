@@ -1,0 +1,13 @@
+[project]
+name = "visual-compliance-agent"
+version = "0.1.0"
+description = "Playwright and vision-LLM agent for form compliance extraction."
+requires-python = ">=3.10"
+dependencies = [
+  "openai>=1.35.0",
+  "playwright>=1.45.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

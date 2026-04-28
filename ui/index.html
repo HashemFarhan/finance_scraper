@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inspection Report</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Visual Compliance Agent</p>
+        <h1>Inspection Report</h1>
+      </div>
+      <div class="actions" aria-label="Report actions">
+        <button id="loadLatestButton" type="button">Load Latest</button>
+        <label class="file-button" for="resultFile">Import JSON</label>
+        <input id="resultFile" type="file" accept="application/json,.json" />
+        <button id="pasteButton" type="button">Paste JSON</button>
+      </div>
+    </header>
+
+    <section id="pastePanel" class="paste-panel" hidden>
+      <textarea id="jsonInput" spellcheck="false" aria-label="JSON input"></textarea>
+      <div class="paste-actions">
+        <button id="applyJsonButton" type="button">Apply</button>
+        <button id="clearJsonButton" type="button">Clear</button>
+      </div>
+    </section>
+
+    <main class="page-shell">
+      <section class="runner-panel" aria-label="Run inspection">
+        <div class="runner-copy">
+          <p class="section-label">Inspect</p>
+          <h2>Run A URL</h2>
+        </div>
+        <form id="inspectForm" class="inspect-form">
+          <label class="url-field">
+            <span>URL</span>
+            <input id="urlInput" name="url" type="text" inputmode="url" placeholder="https://example.com" required />
+          </label>
+          <div class="settings-grid">
+            <label>
+              <span>Max Steps</span>
+              <input id="maxStepsInput" name="max_steps" type="number" min="1" max="20" value="5" />
+            </label>
+            <label>
+              <span>Max Runtime</span>
+              <input id="maxRuntimeInput" name="max_runtime" type="number" min="10" max="900" value="120" />
+            </label>
+            <label>
+              <span>Model</span>
+              <input id="modelInput" name="model" type="text" placeholder="OPENAI_MODEL default" />
+            </label>
+          </div>
+          <div class="toggle-row">
+            <label class="check-control">
+              <input id="useLlmInput" name="use_llm" type="checkbox" checked />
+              <span>Use LLM</span>
+            </label>
+            <label class="check-control">
+              <input id="headfulInput" name="headful" type="checkbox" />
+              <span>Show Browser</span>
+            </label>
+          </div>
+          <div class="run-actions">
+            <button id="runInspectionButton" type="submit">Inspect URL</button>
+            <span id="runStatus" class="run-status">Ready</span>
+          </div>
+        </form>
+      </section>
+
+      <section id="dropZone" class="drop-zone">
+        <span>Drop inspection JSON</span>
+      </section>
+
+      <section class="status-band" aria-label="Inspection summary">
+        <div>
+          <p class="section-label">Target</p>
+          <h2 id="targetUrl">No report loaded</h2>
+        </div>
+        <div id="assessmentBadge" class="assessment-badge muted">Waiting</div>
+      </section>
+
+      <section id="summaryGrid" class="summary-grid" aria-label="Report totals"></section>
+
+      <section class="content-grid">
+        <article class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Assessment</p>
+              <h3>Included And Missing</h3>
+            </div>
+          </div>
+          <div id="coverageList" class="coverage-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Navigation</p>
+              <h3>Step Flow</h3>
+            </div>
+          </div>
+          <div id="stepsList" class="steps-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Evidence</p>
+              <h3>Form And Consent</h3>
+            </div>
+          </div>
+          <div id="evidenceList" class="evidence-list"></div>
+        </article>
+
+        <article class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Detector</p>
+              <h3>Form Candidates</h3>
+            </div>
+          </div>
+          <div id="formCandidateList" class="candidate-list"></div>
+        </article>
+
+        <article class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Documents</p>
+              <h3>Terms And Privacy</h3>
+            </div>
+          </div>
+          <div id="policyList" class="policy-list"></div>
+        </article>
+
+        <article class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Artifacts</p>
+              <h3>Screenshots</h3>
+            </div>
+          </div>
+          <div id="screenshotGrid" class="screenshot-grid"></div>
+        </article>
+
+        <article class="panel panel-wide">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Payload</p>
+              <h3>Returned JSON</h3>
+            </div>
+            <button id="copyRawButton" type="button">Copy</button>
+          </div>
+          <pre id="rawJson" class="raw-json">{}</pre>
+        </article>
+      </section>
+    </main>
+
+    <template id="emptyStateTemplate">
+      <div class="empty-state">
+        <strong>No data</strong>
+        <span>Load a completed crawler result.</span>
+      </div>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
