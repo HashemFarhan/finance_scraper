@@ -18,7 +18,14 @@ $env:OPENAI_API_KEY = "your-key"
 $env:OPENAI_MODEL = "gpt-4o-mini"
 ```
 
-Without `OPENAI_API_KEY`, the agent still runs with heuristic CTA detection.
+For local UI testing, you can also put the key in `config/local_settings.py`:
+
+```python
+OPENAI_API_KEY = "your-key"
+OPENAI_MODEL = "gpt-4o-mini"
+```
+
+Environment variables take precedence. Without an OpenAI key, the agent falls back to legacy DOM/CTA heuristics.
 
 ## Run
 
@@ -49,11 +56,12 @@ The report includes a Form Candidates panel showing which form-like element was 
 
 1. Load the URL in Playwright.
 2. Capture a full-page screenshot and scroll segments.
-3. Ask the LLM for the next action, or fall back to CTA heuristics.
-4. Execute clicks with Playwright and retry close text matches.
-5. Stop when a form is detected, a loop is detected, or limits are reached.
-6. Extract visible consent language, Terms/Privacy links, and policy text.
-7. Return structured JSON with screenshots and evidence.
+3. On the initial page, ask the LLM whether a valid finance form is visible.
+4. If no valid form is visible, ask the LLM for strong button/link candidates that may lead to it.
+5. Click those candidate buttons in ranked order.
+6. After each candidate click, ask the LLM only whether the destination page contains a valid finance form.
+7. Extract visible consent language, Terms/Privacy links, and policy text.
+8. Return structured JSON with screenshots, LLM assessment, candidates, and evidence.
 
 ## Output Shape
 

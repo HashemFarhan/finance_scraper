@@ -494,6 +494,33 @@ button:disabled {
   white-space: pre-wrap;
 }
 
+.candidate-buttons {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.candidate-buttons li {
+  border: 1px solid var(--soft-line);
+  display: grid;
+  gap: 5px;
+  grid-template-columns: minmax(120px, 220px) minmax(0, 1fr) 70px;
+  padding: 10px;
+}
+
+.candidate-buttons strong,
+.candidate-buttons em {
+  color: var(--black);
+  font-style: normal;
+}
+
+.candidate-buttons span {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
 .timeline-index {
   background: var(--crimson);
   color: var(--paper);
@@ -664,6 +691,10 @@ button:disabled {
   }
 
   .candidate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-buttons li {
     grid-template-columns: 1fr;
   }
 

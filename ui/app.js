@@ -298,6 +298,9 @@ function normalizeReport(report) {
     consent_evidence: array(report?.consent_evidence),
     form_candidates: array(report?.form_candidates),
     primary_form_candidate: report?.primary_form_candidate || null,
+    llm_form_assessment: report?.llm_form_assessment || {},
+    llm_button_candidates: array(report?.llm_button_candidates),
+    decision_source: value(report?.decision_source),
     terms_url: value(report?.terms_url),
     privacy_url: value(report?.privacy_url),
     terms_text: value(report?.terms_text),
@@ -327,12 +330,16 @@ function renderReport() {
 
 function renderFormCandidates(report) {
   const candidates = report.form_candidates;
-  if (!candidates.length) {
+  const hasLlmAssessment = Object.keys(report.llm_form_assessment || {}).length > 0;
+  const hasLlmButtons = report.llm_button_candidates.length > 0;
+  if (!candidates.length && !hasLlmAssessment && !hasLlmButtons) {
     renderTemplate(elements.formCandidateList);
     return;
   }
   const primarySelector = value(report.primary_form_candidate?.selector);
-  elements.formCandidateList.innerHTML = candidates
+  const llmAssessment = hasLlmAssessment ? renderLlmFormAssessment(report.llm_form_assessment) : "";
+  const llmButtons = hasLlmButtons ? renderLlmButtonCandidates(report.llm_button_candidates) : "";
+  const domCandidates = candidates
     .map((candidate, index) => {
       const selector = value(candidate.selector);
       const isPrimary = index === 0 || (primarySelector && selector === primarySelector);
@@ -363,6 +370,58 @@ function renderFormCandidates(report) {
       `;
     })
     .join("");
+  elements.formCandidateList.innerHTML = llmAssessment + llmButtons + domCandidates;
+}
+
+function renderLlmFormAssessment(assessment) {
+  const fields = array(assessment.visible_fields);
+  return `
+    <div class="candidate-item primary">
+      <div class="candidate-top">
+        <div>
+          <span class="timeline-index">LLM</span>
+          <strong>${escapeHtml(value(assessment.label) || value(assessment.purpose) || "Finance form assessment")}</strong>
+        </div>
+        <span class="status-pill present">Selected</span>
+      </div>
+      <p class="detail-text">${escapeHtml(value(assessment.why_valid_finance_form) || value(assessment.reason) || "LLM marked this as the valid finance form.")}</p>
+      <div class="candidate-grid">
+        <span><b>Purpose</b>${escapeHtml(value(assessment.purpose) || "not returned")}</span>
+        <span><b>Location</b>${escapeHtml(value(assessment.location) || "not returned")}</span>
+        <span><b>Submit</b>${escapeHtml(value(assessment.submit_text) || "not returned")}</span>
+        <span><b>Confidence</b>${escapeHtml(value(assessment.confidence) || "0")}</span>
+        <span><b>Fields</b>${escapeHtml(fields.join(", ") || "not returned")}</span>
+        <span><b>Consent</b>${escapeHtml(value(assessment.consent_or_disclosure) || "not returned")}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderLlmButtonCandidates(candidates) {
+  return `
+    <div class="candidate-item">
+      <div class="candidate-top">
+        <div>
+          <span class="timeline-index">CTA</span>
+          <strong>LLM Button Candidates</strong>
+        </div>
+        <span class="status-pill issue">${candidates.length}</span>
+      </div>
+      <ul class="candidate-buttons">
+        ${candidates
+          .map(
+            (candidate) => `
+              <li>
+                <strong>${escapeHtml(value(candidate.text))}</strong>
+                <span>${escapeHtml(value(candidate.reason) || "No reason returned")}</span>
+                <em>${escapeHtml(value(candidate.confidence) || "0")}</em>
+              </li>
+            `
+          )
+          .join("")}
+      </ul>
+    </div>
+  `;
 }
 
 function assess(report) {
