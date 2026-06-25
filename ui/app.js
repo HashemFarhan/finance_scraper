@@ -110,7 +110,6 @@ function bindElements() {
     "maxStepsInput",
     "maxRuntimeInput",
     "modelInput",
-    "useLlmInput",
     "headfulInput",
     "runInspectionButton",
     "runStatus",
@@ -152,7 +151,6 @@ async function runInspection(event) {
     max_steps: Number(elements.maxStepsInput.value || 5),
     max_runtime: Number(elements.maxRuntimeInput.value || 120),
     model: elements.modelInput.value.trim(),
-    use_llm: elements.useLlmInput.checked,
     headful: elements.headfulInput.checked,
   };
   if (!payload.url) {

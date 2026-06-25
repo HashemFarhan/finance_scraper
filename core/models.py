@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Literal
-
-
-DecisionAction = Literal["form_visible", "click", "none"]
+from typing import Any
 
 
 @dataclass
@@ -14,15 +11,6 @@ class ScreenshotArtifact:
     index: int
     url: str
     scroll_y: int | None = None
-
-
-@dataclass
-class NavigationDecision:
-    action: DecisionAction
-    text: str | None = None
-    reason: str = ""
-    confidence: float = 0.0
-    raw: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass

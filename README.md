@@ -1,6 +1,6 @@
 # Visual Compliance Agent
 
-Automated browser agent that opens a source URL, uses screenshots plus an optional vision LLM to navigate toward a form, then extracts consent language, Terms text, Privacy text, and evidence.
+Automated browser agent that opens a source URL, sends page screenshots to a vision LLM to find or navigate toward a finance-related form, then extracts consent language, Terms text, Privacy text, and evidence.
 
 ## Setup
 
@@ -11,7 +11,7 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-Optional LLM navigation:
+LLM navigation is required:
 
 ```powershell
 $env:OPENAI_API_KEY = "your-key"
@@ -25,7 +25,7 @@ OPENAI_API_KEY = "your-key"
 OPENAI_MODEL = "gpt-4o-mini"
 ```
 
-Environment variables take precedence. Without an OpenAI key, the agent falls back to legacy DOM/CTA heuristics.
+Environment variables take precedence. Without an OpenAI key, the agent returns a configuration error; there is no heuristic fallback path.
 
 ## Run
 
@@ -37,7 +37,6 @@ Useful options:
 
 ```powershell
 python main.py https://example.com --max-steps 5 --max-runtime 120 --headful
-python main.py https://example.com --no-llm
 ```
 
 ## Report UI
@@ -48,7 +47,7 @@ python report_server.py
 python report_server.py --port 8766
 ```
 
-Open the matching UI URL, for example `http://127.0.0.1:8766/ui/` when using `--port 8766`. The interface can run a fresh inspection from a pasted URL, choose max steps/runtime, toggle LLM navigation, choose a model, show the browser, load `runs/result.json`, or import/paste another result JSON.
+Open the matching UI URL, for example `http://127.0.0.1:8766/ui/` when using `--port 8766`. The interface can run a fresh inspection from a pasted URL, choose max steps/runtime, choose a model, show the browser, load `runs/result.json`, or import/paste another result JSON.
 
 The report includes a Form Candidates panel showing which form-like element was selected, the detector score, selector, reason, visible text, field counts, and page coordinates.
 

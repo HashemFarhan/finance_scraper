@@ -94,9 +94,6 @@ Return one of:
 """
 
 
-SYSTEM_PROMPT = ENTRY_FORM_PROMPT
-
-
 class LLMClient:
     def __init__(self, model: str | None = None, max_images: int = 4, timeout: float = 60.0) -> None:
         local_model = _local_setting("OPENAI_MODEL")
@@ -116,13 +113,6 @@ class LLMClient:
     @property
     def enabled(self) -> bool:
         return self._client is not None
-
-    async def decide(
-        self,
-        screenshots: list[ScreenshotArtifact],
-        current_url: str,
-    ) -> dict | None:
-        return await self.analyze_entry_page(screenshots, current_url)
 
     async def analyze_entry_page(
         self,

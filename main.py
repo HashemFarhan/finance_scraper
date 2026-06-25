@@ -43,11 +43,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show the browser instead of running headless.",
     )
     parser.add_argument(
-        "--no-llm",
-        action="store_true",
-        help="Disable the vision LLM and use heuristic navigation only.",
-    )
-    parser.add_argument(
         "--model",
         help="OpenAI-compatible vision model name. Defaults to OPENAI_MODEL or gpt-4o-mini.",
     )
@@ -67,7 +62,6 @@ async def run(args: argparse.Namespace) -> dict:
         max_runtime_seconds=args.max_runtime,
         output_dir=args.output_dir,
         headless=not args.headful,
-        use_llm=not args.no_llm,
         llm_model=args.model,
     )
     result = await controller.run(args.url)

@@ -101,14 +101,12 @@ class InspectionSettings:
         max_steps: int,
         max_runtime: int,
         headful: bool,
-        use_llm: bool,
         model: str | None,
     ) -> None:
         self.url = url
         self.max_steps = max_steps
         self.max_runtime = max_runtime
         self.headful = headful
-        self.use_llm = use_llm
         self.model = model
 
     @classmethod
@@ -127,7 +125,6 @@ class InspectionSettings:
                 payload.get("max_runtime", 120), "max_runtime", minimum=10, maximum=900
             ),
             headful=bool(payload.get("headful", False)),
-            use_llm=bool(payload.get("use_llm", True)),
             model=clean_optional_text(payload.get("model")),
         )
 
@@ -138,7 +135,6 @@ async def run_inspection(settings: InspectionSettings) -> dict[str, Any]:
         max_runtime_seconds=settings.max_runtime,
         output_dir=ROOT / "runs",
         headless=not settings.headful,
-        use_llm=settings.use_llm,
         llm_model=settings.model,
     )
     result = await controller.run(settings.url)

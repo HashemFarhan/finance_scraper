@@ -25,7 +25,15 @@ class Crawler:
 
     async def __aenter__(self) -> "Crawler":
         self._playwright = await async_playwright().start()
-        self.browser = await self._playwright.chromium.launch(headless=self.headless)
+        self.browser = await self._playwright.chromium.launch(
+            headless=self.headless,
+            args=[
+                "--no-sandbox",
+                "--single-process",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+            ],
+        )
         self.context = await self.browser.new_context(viewport=self.viewport)
         self.context.set_default_timeout(self.timeout_ms)
         return self

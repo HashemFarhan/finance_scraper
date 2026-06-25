@@ -5,24 +5,6 @@ from dataclasses import dataclass
 from playwright.async_api import Page
 
 
-CTA_WEIGHTS = {
-    "get started": 100,
-    "start": 92,
-    "apply now": 92,
-    "continue": 90,
-    "next": 88,
-    "sign up": 86,
-    "register": 86,
-    "request": 82,
-    "quote": 80,
-    "contact": 78,
-    "join": 76,
-    "enroll": 76,
-    "book": 72,
-    "submit": 70,
-}
-
-
 @dataclass
 class ElementCandidate:
     text: str
@@ -35,6 +17,10 @@ class ElementMatcher:
     async def find_click_candidates(
         self, page: Page, requested_text: str | None = None
     ) -> list[ElementCandidate]:
+        requested = self._normalize(requested_text)
+        if not requested:
+            return []
+
         elements = await page.evaluate(
             r"""
             () => {
@@ -57,7 +43,6 @@ class ElementMatcher:
             """
         )
         candidates: list[ElementCandidate] = []
-        requested = (requested_text or "").strip().lower()
         for element in elements:
             text = str(element.get("text", ""))
             score = self._score(text, requested)
@@ -76,20 +61,14 @@ class ElementMatcher:
         return self._dedupe(candidates)
 
     def _score(self, text: str, requested: str) -> int:
-        lowered = text.lower()
-        score = 0
-        if requested:
-            if lowered == requested:
-                score += 150
-            elif requested in lowered or lowered in requested:
-                score += 115
-
-        for phrase, weight in CTA_WEIGHTS.items():
-            if phrase == lowered:
-                score += weight
-            elif phrase in lowered:
-                score += weight - 15
-        return score
+        lowered = self._normalize(text)
+        if lowered == requested:
+            return 150
+        if requested in lowered:
+            return 115
+        if lowered in requested:
+            return 90
+        return 0
 
     def _dedupe(self, candidates: list[ElementCandidate]) -> list[ElementCandidate]:
         seen: set[str] = set()
@@ -101,3 +80,6 @@ class ElementMatcher:
             seen.add(key)
             output.append(candidate)
         return output
+
+    def _normalize(self, value: str | None) -> str:
+        return " ".join((value or "").split()).lower()

@@ -1,0 +1,9 @@
+.git
+.venv
+venv
+runs
+__pycache__
+*.pyc
+.pytest_cache
+config/local_settings.py
+out.json
